@@ -1,0 +1,96 @@
+module nshmanager-impl {
+    yang-version 1;
+    namespace "urn:eu:neonsh:nshmanager:impl";
+    prefix "nshmanager-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+    description
+        "This module contains the base YANG definitions for nshmanager-impl.";
+
+    revision "2016-10-17" {
+        description
+            "Initial revision.";
+    }
+
+    // This is the definition of the service implementation as a module identity
+    identity nshmanager-impl {
+            base config:module-type;
+
+            // Specifies the prefix for generated java classes.
+            config:java-name-prefix NSHManager;
+    }
+
+    // Augments the 'configuration' choice node under modules/module
+    augment "/config:modules/config:module/config:configuration" {
+        case nshmanager-impl {
+            when "/config:modules/config:module/config:type = 'nshmanager-impl'";
+
+            //wires in the data-broker service
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+            container notification-service {
+                uses config:service-ref {
+                  refine type {
+                    mandatory false;
+                    config:required-identity mdsal:binding-notification-service;
+                  }
+               }
+            }
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+                        container sshConnectionInfo{
+                            leaf username{
+                                type string;
+                                default "mininet";
+                            }
+                            leaf password{
+                                type string;
+                                default "mininet";
+                            }
+                            leaf ip{
+                                type string;
+                                default "192.168.56.101";
+                            }
+                        }
+                        leaf sfc-VLAN {
+                            type uint16;
+                            default 1037;
+                        }
+                        leaf sfc-env {
+                            type string;
+                            default "local";
+                        }
+                        leaf sfc-switch{
+                            type string;
+                            default "s2";
+                        }
+                        leaf sfc-OpenstackPortSwitchID {
+                            type string;
+                            default "openflow:1";
+                        }
+                        leaf sfc-OpenstackPortSwitchPort {
+                           type string;
+                           default "s1-eth3";
+                        }
+                        leaf ovsInternalPort{
+                            type uint16;
+                            default 1;
+
+                        }
+        }
+    }
+}

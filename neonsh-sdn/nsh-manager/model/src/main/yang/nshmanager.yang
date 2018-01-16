@@ -1,0 +1,216 @@
+module nshmanager {
+    yang-version 1;
+    namespace "urn:eu:neonsh:nshmanager";
+    prefix nshmanager;
+
+    import nshmanager-commons { prefix qneg-com; revision-date 2016-10-17; }
+    import nshmanager-registry { prefix nm-reg; revision-date 2016-10-17; }
+    import ietf-inet-types { prefix inet; }
+    import ietf-yang-types { prefix yang; }
+    import network-topology {
+        prefix topo;
+        revision-date 2013-10-21;
+    }
+
+    description "NSH Manager configuration";
+
+    revision "2016-10-17" {
+        description "Initial version of nshmanager interfaces";
+    }
+
+    /*
+     * RPC definitions
+     */
+
+        typedef RequestOutcome {
+            type enumeration {
+                enum "SUCCESS";
+                enum "FAILURE";
+            }
+        }
+
+    rpc init-setup {
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc manually-enter-topology-info {
+        input {
+            container topology-info {
+                uses nm-reg:topology-info-grouping ;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc add-metadata {
+        input {
+            container metadata {
+                  uses nm-reg:metadata-grouping ;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc remove-metadata {
+        input {
+            leaf metadata-name {
+                  type string;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc add-SFIs {
+        input {
+            container SFIs {
+                  uses nm-reg:service-function-instances-grouping ;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc remove-SFI {
+        input {
+            leaf sfi-name {
+                  type string;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc add-access-lists {
+        input {
+            container access-lists {
+                  uses nm-reg:access-lists-grouping ;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc remove-access-list {
+        input {
+            leaf acl-name {
+                  type string;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc add-classification {
+        input {
+                leaf access-list-name {
+                    type string;
+                }
+                leaf sfc-name {
+                    type string;
+                }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    rpc remove-classification {
+        input {
+            leaf classification-id {
+                  type int64;
+            }
+        }
+        output {
+            leaf request-outcome {
+            	type RequestOutcome;
+            }
+            leaf outcome-details {
+            	type string;
+            }
+        }
+    }
+
+    notification linkChanged {
+        description "A Link was changed";
+        leaf topology-update {
+            type enumeration {
+                  enum "linkRemoved" {
+                            value 0;
+                            description "The link was removed.";
+                   }
+                   enum "linkAdded" {
+                      value 1;
+                      description "The link was added.";
+                   }
+                   enum "linkUpdated" {
+                        value 2;
+                        description "The link was updated";
+                   }
+
+            }
+        }
+
+        container link {
+            uses topo:link-attributes;
+        }
+
+    }
+
+}

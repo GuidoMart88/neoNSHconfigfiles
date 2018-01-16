@@ -1,0 +1,313 @@
+module nshmanager-registry {
+    yang-version 1;
+    namespace "urn:eu:neonsh:registryhandler:nshmanager-registry";
+    prefix nsppathmanager-registry;
+
+    import ietf-inet-types { prefix inet; }
+    import ietf-yang-types { prefix yang; }
+
+    description "Structures related to NSH Manager ";
+
+    revision "2016-10-17" {
+        description "Initial version of nshmanager-registry";
+    }
+
+
+        typedef SwitchRole {
+            type enumeration {
+                enum "CLASSIFIER";
+                enum "FORWARDER";
+            }
+        }
+
+        typedef FlowStatus {
+            type enumeration {
+                enum "EMBEDDED";
+                enum "NOTEMBEDDED";
+            }
+        }
+
+     grouping topology-info-grouping {
+            list switches {
+            key "switch-id";
+                leaf switch-id {
+                    type string;
+                }
+                leaf-list role {
+                    type SwitchRole;
+                }
+                container ssh-info {
+                    leaf ip {
+                        type inet:ipv4-address;
+                    }
+                    leaf username {
+                        type string;
+                    }
+                    leaf password {
+                        type string;
+                    }
+                    leaf ssh-port {
+                        type int32;
+                    }
+                }
+                leaf src-port {
+            	    type int64;
+                }
+                leaf dest-port {
+            	    type int64;
+                }
+            }
+     }
+
+    grouping metadata-grouping {
+        list metadata-elements {
+        key "name";
+            leaf name {
+                type string;
+            }
+            container nsh-metadata {
+                leaf npc {
+                    type int32;
+                }
+                leaf nsc {
+                    type int32;
+                }
+                leaf spc {
+                    type int32;
+                }
+                leaf ssc {
+                    type int32;
+                }
+            }
+        }
+    }
+
+    grouping service-function-instances-grouping {
+        list service-function-instances {
+        key "name";
+            leaf name {
+                type string;
+            }
+            leaf sf-type {
+                type string;
+            }
+            container topology-info {
+                leaf switch-id {
+                    type string;
+                }
+                leaf port {
+                    type int64;
+                }
+            }
+            container management-info {
+                container associated-metadata {
+                    leaf-list metadata-names {
+                        type string;
+                    }
+                }
+                container ssh-info {
+                    leaf ip {
+                        type inet:ipv4-address;
+                    }
+                    leaf username {
+                        type string;
+                    }
+                    leaf password {
+                        type string;
+                    }
+                    leaf ssh-port {
+                        type int32;
+                    }
+                }
+            }
+        }
+    }
+
+        grouping service-function-types-grouping {
+            list service-function-types {
+            key "name";
+                leaf name {
+                    type string;
+                }
+                leaf sf-type {
+                    type string;
+                }
+            }
+        }
+
+        grouping service-function-chains-grouping {
+            leaf currId {
+                type int64;
+            }
+            list service-function-chains {
+            key "id";
+                leaf id {
+                    type int64;
+                }
+                leaf name {
+                    type string;
+                }
+                list sf-type {
+                    key "index";
+                        leaf index {
+                            type int32;
+                        }
+                        leaf name {
+                            type string;
+                        }
+                }
+            }
+        }
+
+
+    grouping access-lists-grouping {
+        list access-lists {
+        key "name";
+                leaf name {
+                    type string;
+                }
+                list access-list-entries {
+                    key acle-id;
+
+                    leaf acle-id {
+                        type string;
+                    }
+                    leaf src-ip {
+                        type inet:ipv4-address;
+                    }
+                    leaf dst-port{
+                        type int32;
+                    }
+                    leaf IPprotocol{
+                         type int32;
+                    }
+                    leaf metadata-name {
+                        type string;
+                    }
+                }
+        }
+    }
+
+    grouping classifications-grouping {
+        leaf currId {
+            type int64;
+        }
+        leaf defaultFlowStatus {
+            type FlowStatus;
+        }
+
+        list classifications {
+        key "id";
+                leaf id {
+                    type int64;
+                }
+                leaf access-list-name {
+                    type string;
+                }
+                leaf sfc-name {
+                    type string;
+                }
+        }
+    }
+
+    grouping metadata-classification-mappings-grouping {
+        list metadata-classification-mappings {
+        key "id";
+                leaf id {
+                    type string;
+                }
+                leaf classification-id {
+                    type string;
+                }
+                list flows {
+                        key "id";
+                                leaf id {
+                                    type string;
+                                }
+                                leaf switchId {
+                                    type string;
+                                }
+                                leaf tableId {
+                                    type string;
+                                }
+                                leaf flowId {
+                                    type string;
+                                }
+                        }
+        }
+    }
+
+    grouping match-flows-per-port-grouping {
+        list flows-to-port-mappings {
+        key "switch-port-id";
+                leaf switch-port-id {
+                    type string;
+                }
+                leaf switch-id {
+                    type string;
+                }
+                leaf port {
+                    type string;
+                }
+                list flows {
+                        key "id";
+                                leaf id {
+                                    type string;
+                                }
+                                leaf switchName {
+                                    type string;
+                                }
+                                leaf nspHEX {
+                                    type string;
+                                }
+                                leaf nsiHEX {
+                                    type string;
+                                }
+                                leaf metadataHEX {
+                                    type string;
+                                }
+                                leaf username {
+                                    type string;
+                                }
+                                leaf password {
+                                    type string;
+                                }
+                                leaf IP {
+                                    type string;
+                                }
+                        }
+        }
+    }
+
+     container nsh-manager-DM {
+         container topology-info {
+             uses topology-info-grouping;
+         }
+         container metadata {
+             uses metadata-grouping;
+         }
+         container service-function-types {
+             uses service-function-types-grouping;
+         }
+         container service-function-chains {
+             uses service-function-chains-grouping;
+         }
+         container service-function-instances {
+             uses service-function-instances-grouping;
+         }
+         container access-lists {
+             uses access-lists-grouping;
+         }
+         container classifications {
+             uses classifications-grouping;
+         }
+         container metadata-classification-mappings {
+            uses metadata-classification-mappings-grouping;
+         }
+         container match-flows-per-port {
+            uses match-flows-per-port-grouping;
+         }
+     }
+
+
+}

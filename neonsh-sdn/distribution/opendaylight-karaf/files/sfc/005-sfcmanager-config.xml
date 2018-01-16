@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type
+                            xmlns:prefix="urn:eu:neonsh:sfcmanager:impl">prefix:sfcmanager-impl
+                    </type>
+                    <name>sfcmanager-impl</name>
+
+                    <notification-service>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                            binding:binding-notification-service
+                        </type>
+                        <name>binding-notification-broker</name>
+                    </notification-service>
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                            binding:binding-async-data-broker
+                        </type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+                    <rpc-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                            binding:binding-rpc-registry
+                        </type>
+                        <name>binding-rpc-broker</name>
+                    </rpc-registry>
+                    <sfc-VLAN>1037</sfc-VLAN>
+                    <sshConnectionInfo>
+                        <username>mininet</username>
+                        <password>mininet</password>
+                        <ip>192.168.58.101</ip>
+                    </sshConnectionInfo>
+                    <ovsInternalPort>1</ovsInternalPort>
+                    <sfc-env>local</sfc-env>
+                    <sfc-switch>s2</sfc-switch>
+                    <sfc-OpenstackPortSwitchID>openflow:1</sfc-OpenstackPortSwitchID>
+                    <sfc-OpenstackPortSwitchPort>s1-eth3</sfc-OpenstackPortSwitchPort>
+                </module>
+            </modules>
+        </data>
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
+        <capability>urn:eu:neonsh:sfcmanager:impl?module=sfcmanager-impl&amp;revision=2016-10-17</capability>
+    </required-capabilities>
+</snapshot>

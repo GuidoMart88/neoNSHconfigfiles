@@ -1,0 +1,194 @@
+module orchestrator {
+    yang-version 1;
+    namespace "urn:eu:neonsh:registryhandler:orchestrator";
+    prefix orchestrator;
+
+    import nshmanager-commons { prefix qneg-com; revision-date 2016-10-17; }
+    import ietf-inet-types { prefix inet; }
+    import ietf-yang-types { prefix yang; }
+    description "QoS Orchestrator configuration";
+
+    revision "2016-10-17" {
+        description "Initial version.";
+    }
+
+    typedef RegistrationStatus {
+        type enumeration {
+            enum "ACTIVE";
+            enum "PROBLEMATIC";
+            enum "EXPIRED";
+            enum "FAILED";
+            /*...*/ }
+    }
+
+    grouping orchestrator-info {
+            leaf orchestrator-id {
+                description
+                                "A unique ID to internally reference the qos-orchestrator ";
+                type string;
+            }
+            leaf orchestrator-token {
+                description
+                                "An authentication token provided by the nshmanager to the
+                                qosorchestrator during the registration phase, and sent/validated during all
+                                subsequent calls from the qosorchestrator to the nshmanager.";
+            type string;
+            }
+            leaf orchestrator-uri {
+                description
+                                "The URI of the qos-orchestrator";
+                type inet:uri;
+            }
+            leaf orchestrator-ip {
+                type inet:ipv4-address;
+            }
+    }
+
+    grouping nshmanager-info {
+            leaf domain-name {
+                type string;
+            }
+            leaf domain-id {
+                type string;
+            }
+            leaf sdnControllerIpAddress {
+                type inet:ipv4-address;
+            }
+            leaf sdnControllerPort {
+                type inet:port-number;
+            }
+            leaf domain-description {
+            	type qneg-com:HostType;
+            }
+            leaf username {
+                type string;
+            }
+            leaf email {
+                type string;
+            }
+            leaf password {
+                type string;
+            }
+            leaf domain-token {
+                description
+                               "An authentication token provided by the qosorchestrator to the
+                               nshmanager during the registration phase, and sent/validated during all
+                               subsequent relpies from the nshmanager to the qosorchestrator.";
+                type string;
+            }
+    }
+
+
+        grouping path-segment-offer-transaction-info {
+            leaf transaction-id {
+                description
+                                "A unique ID to reference a specific transaction";
+                type uint32;
+            }
+            /* for current use-cases this information is redundant;
+            would make sense for use cases where the orchestrator
+            can change over time */
+            leaf qos-orchestrator-id {
+                type uint32;
+            }
+            leaf request-time {
+                type yang:timestamp;
+            }
+            choice response {
+                container successful-path-segment-offer-response {
+                    leaf-list path-segment-id {
+                        type int64;
+                    }
+                }
+                container erroneous-path-segment-offer-response {
+                    leaf reason {
+                        type string;
+                    }
+                }
+            }
+        }
+
+        grouping path-segment-instantiation-transaction-info {
+            leaf transaction-id {
+                description
+                                "A unique ID to reference a specific transaction";
+                type uint32;
+            }
+            /* for current use-cases this information is redundant;
+            would make sense for use cases where the orchestrator
+            can change over time */
+            leaf qos-orchestrator-id {
+                type string;
+            }
+            leaf request-time {
+                type yang:timestamp;
+            }
+            leaf outcome {
+                type qneg-com:PathSegmentInstantiationOutcome;
+            }
+            choice response {
+                container successful-path-segment-instantiation-response {
+                    leaf flow-id {
+                        type string;
+                    }
+                    leaf path-id {
+                        type string;
+                    }
+                }
+                container erroneous-path-segment-instantiation-response {
+                    leaf reason {
+                        type string;
+                    }
+                }
+            }
+        }
+
+    /* Following are the two actual objects that need to be persisted at the datastore, i.e., 'nshmanager-status' and 'nshmanager-stats'*/
+
+    container nshmanager-status {
+        container nshmanager-details {
+            uses nshmanager-info;
+        }
+        container qosorchestrator-details {
+            uses orchestrator-info;
+        }
+        container registration-runtime-info {
+            leaf registration-status {
+                type RegistrationStatus;
+            }
+        }
+        container active-path-segment-offers {
+            uses qneg-com:path-segment-offer-list;
+        }
+        container available-path-segment-offers {
+            uses qneg-com:path-segment-offer-list;
+        }
+    }
+
+    container nshmanager-stats {
+        container path-segment-offer-transaction-stats {
+            list path-segment-offer-transaction-elements {
+                key "transaction-id";
+                uses path-segment-offer-transaction-info;
+            }
+        }
+        container path-segment-instantiation-transaction-stats {
+            list path-segment-instantiation-transaction-elements {
+                key "transaction-id";
+                uses path-segment-instantiation-transaction-info;
+            }
+        }
+        container transactions-status {
+            leaf current-transaction-id {
+                type uint32;
+            }
+        }
+    }
+
+    container admin-config {
+    container admin-configs{
+    uses qneg-com:admin-configurations;
+    }
+    }
+
+}

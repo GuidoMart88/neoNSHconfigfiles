@@ -1,0 +1,40 @@
+# Eclipse
+.classpath
+.project
+.checkstyle
+.settings/
+.pydevproject
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+target/
+*~
+
+# ODL
+yang-gen-code/
+yang-gen-config/
+*.log
+bin/
+dist/
+logs/
+*.MF
+
+# Package Files #
+*.jar
+!path-manager/implementation/src/resources/tum-local-repository/de/tum/ei/lkn/eces/*/*/*.jar
+
+
+# Integration build
+gitlab-ci.yml
+
+#Python
+*.pyc
+#app configs (tokens)
+*.csv

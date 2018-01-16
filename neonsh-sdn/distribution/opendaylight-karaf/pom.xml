@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.opendaylight.controller</groupId>
+    <artifactId>karaf-parent</artifactId>
+    <version>1.7.1-Boron-SR1</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>eu.neonsh</groupId>
+  <artifactId>packaging</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Karaf Distribution Packaging</name>
+  <prerequisites>
+    <maven>3.2</maven>
+  </prerequisites>
+  <properties>
+    <!--uncomment one line below to have corresponding feature installed at boot time -->
+    <!--<karaf.localFeature>neonsh-inter</karaf.localFeature>-->
+    <!--<karaf.localFeature>neonsh-intra</karaf.localFeature>-->
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <!-- scope is compile so all features (there is only one) are installed
+      into startup.properties and the feature repo itself is not installed -->
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>framework</artifactId>
+      <version>${karaf.version}</version>
+      <type>kar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>eu.neonsh</groupId>
+      <artifactId>features</artifactId>
+      <classifier>features</classifier>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+  <!-- DO NOT install or deploy the karaf artifact -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>sfcConfiguration</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/assembly/etc/opendaylight/karaf/</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>files/sfc/</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--<execution>-->
+            <!--<id>configuration</id>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+              <!--<goal>copy-resources</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+              <!--<outputDirectory>${project.build.directory}/assembly/configuration</outputDirectory>-->
+              <!--<resources>-->
+                <!--<resource>-->
+                  <!--<directory>files/config/</directory>-->
+                  <!--<filtering>false</filtering>-->
+                <!--</resource>-->
+              <!--</resources>-->
+            <!--</configuration>-->
+          <!--</execution>-->
+          <!--<execution>-->
+            <!--<id>openflow</id>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+              <!--<goal>copy-resources</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+              <!--<outputDirectory>${project.build.directory}/assembly/etc/opendaylight/datastore/initial/config</outputDirectory>-->
+              <!--<resources>-->
+                <!--<resource>-->
+                  <!--<directory>files/etc/flowplugin</directory>-->
+                  <!--<filtering>false</filtering>-->
+                <!--</resource>-->
+              <!--</resources>-->
+            <!--</configuration>-->
+          <!--</execution>-->
+          <!--<execution>-->
+            <!--<id>etc</id>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+              <!--<goal>copy-resources</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+              <!--<outputDirectory>${project.build.directory}/assembly/etc/</outputDirectory>-->
+              <!--<resources>-->
+                <!--<resource>-->
+                  <!--<directory>files/etc/etc</directory>-->
+                  <!--<filtering>false</filtering>-->
+                <!--</resource>-->
+              <!--</resources>-->
+            <!--</configuration>-->
+          <!--</execution>-->
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

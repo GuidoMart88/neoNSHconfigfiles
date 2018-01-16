@@ -1,0 +1,431 @@
+module nshmanager-commons {
+    yang-version 1;
+    namespace "urn:eu:neonsh:registryhandler:nshmanager-commons";
+    prefix nshmanager-commons;
+
+    import ietf-inet-types { prefix inet; }
+    import ietf-yang-types { prefix yang; }
+
+    description "Common structures related to NSH Manager ";
+
+    revision "2016-10-17" {
+        description "Initial version of nshmanager commons";
+    }
+
+    typedef PathSegmentInstantiationOutcome {
+        type enumeration {
+            enum "ESTABLISHED";
+            enum "NONESTABLISHMENT";
+        }
+    }
+
+    typedef MonitoringUpdateOutcome {
+        type enumeration {
+            enum "PATH_SEGMENT_CAPABILITIES_FULFILLED";
+            enum "PATH_SEGMENT_CAPABILITIES_NOT_FULFILLED";
+        }
+    }
+    
+    typedef InterfaceStatus {
+        type enumeration {
+            enum "UP";
+            enum "DOWN";
+        }
+    }
+
+    typedef NodeStatus {
+        type enumeration {
+            enum "UP";
+            enum "DOWN";
+        }
+    }
+
+
+    typedef PortStatus {
+        type enumeration {
+            enum "UP";
+            enum "DOWN";
+        }
+    }
+
+    grouping path-segment-qos {
+        leaf bandwidth {
+            type decimal64 {
+                fraction-digits 3;
+            }
+        }
+        leaf packetloss {
+            type decimal64 {
+                fraction-digits 3;
+            }
+        }
+        leaf delay {
+            type decimal64 {
+                fraction-digits 3;
+            }
+        }
+        leaf jitter {
+            type decimal64 {
+                fraction-digits 3;
+            }
+        }
+    }
+
+
+
+    grouping border-port-list {
+        list border-port-element {
+            key "border-port-id";
+            leaf border-port-id {
+                description "";
+                type string;
+            }
+            leaf adjacent-ASN {
+                type int32;
+            }
+            leaf adjacent-border-node-id {
+                type string;
+            }
+            leaf port-status {
+                type InterfaceStatus;
+            }
+            leaf adjacent-router-mac {
+                type string;
+            }
+        }
+    }
+
+        grouping border-port-status-grouping {
+            list border-ports-status {
+                key "port-id";
+                leaf port-id {
+                    description "";
+                    type string;
+                }
+                leaf port-status {
+                    type PortStatus;
+                }
+            }
+        }
+
+    
+    /* This structure is a modeling of relevant information for the edgepoints (i.e., switches of the controlled domain, connecting to ingress/egress ASs) */
+
+    grouping border-switches-grouping {
+    	list border-switch {
+    	key "switch-id";
+    		leaf switch-id {
+    		    description "This is a unique identifier for a border switch";
+    			 type string;
+    		}
+    		leaf-list ip-prefixes {
+    			type string;
+    		}
+    		/*leaf node-status {
+    			type NodeStatus;
+    		}*/
+    		leaf openflow-id {
+    			type string;
+    		}
+    		container borderPorts {
+    			uses border-port-list;
+    		}
+    	}
+    }
+
+    grouping border-switches-status-grouping {
+    	list border-switches-status {
+    	key "border-switch-id";
+    		leaf border-switch-id {
+    		    description "This is a unique identifier for a border switch";
+    			 type string;
+    		}
+    		leaf node-status {
+    			type NodeStatus;
+    		}
+    		container borderPorts-status {
+    			uses border-port-status-grouping;
+    		}
+    	}
+    }
+
+    grouping active-segments-status-grouping {
+    	list path-segments-status {
+    	key "path-segment-id";
+    		leaf path-segment-id {
+    		    description "This is a unique identifier for a border switch";
+    			 type string;
+    		}
+            container qos-parameters {
+                uses path-segment-qos;
+            }
+    	}
+    }
+
+    /* This structure is a modeling of relevant information for the policies (i.e., which application profiles correspond to which qos requirements) */
+
+    grouping policy-model {
+    	list application-type-requirement {
+    	key "application-type-name";
+    		leaf application-type-name {
+    		    description "This is a unique identifier for an application type requirement, i.e., there is only one entry in this list for each application type";
+    			 type ApplicationType;
+    		}
+    		container qos-requirements {
+    			uses path-segment-qos;
+    		}
+    	}
+    }
+
+    /* This structure is a modeling of relevant information for the path segments (i.e., how they should be configured, what static paths should be established etc.) */
+
+    grouping path-segments-model {
+        leaf queues-number {
+            type int32;
+        }
+        container paths-per-src-dest-offered {
+            leaf max {
+                type int32;
+            }
+            leaf strategy {
+                type PathOffersSelectionStrategy;
+            }
+        }
+
+    }
+
+    typedef PathOffersSelectionStrategy {
+        type enumeration {
+            enum "random" {
+                description
+                                "Random selection.";
+            }
+            enum "hops-based" {
+                description
+                                "Based on the number of hops.";
+            }
+            enum "other" {
+                description
+                                "Other.";
+            }
+        }
+    }
+
+    typedef Protocol {
+        type enumeration {
+            enum "UNKNOWN" {
+                description
+                                "An unknown or unspecified protocol.";
+            }
+            enum "IPV4" {
+                description
+                                "The IPv4 protocol.";
+            }
+            enum "IPV6" {
+                description
+                                "The IPv6 protocol.";
+            }
+            enum "TCP" {
+                description
+                                "The TCP protocol.";
+            }
+            enum "UDP" {
+                description
+                                "The UDP protocol.";
+            }
+            enum "SCTP" {
+                description
+                                "The SCTP protocol.";
+            }
+            enum "IGMP" {
+                description
+                                "The IGMP protocol.";
+            }
+            enum "ICMPV4" {
+                description
+                                "The ICMPv4 protocol.";
+            }
+            enum "ICMPV6" {
+                description
+                                "The ICMPv6 protocol.";
+            }
+            enum "ARP" {
+                description
+                                "The ARP protocol.";
+            }
+            enum "MPLS" {
+                description
+                                "The MPLS protocol.";
+            }
+            enum "PBB" {
+                description
+                                "The PBB set of protocols.";
+            }
+            enum "GRE" {
+                description
+                                "The GRE protocol.";
+            }
+        }
+    }
+
+    typedef RegistrationRequestOutcome {
+        type enumeration {
+            enum "SUCCESSFUL";
+            enum "FAILURE";
+            enum "ALREADYREGISTERED";
+        }
+    }
+
+    typedef pathSegmentOfferOutcome {
+        type enumeration {
+            enum "SUCCESS";
+            enum "FAILURE";
+            enum "RESEND";
+        }
+    }
+
+    typedef EnterEdgePointsOutcome {
+        type enumeration {
+            enum "SUCCESS";
+            enum "FAILURE";
+        }
+    }
+
+    typedef EnterAdminConfigOutcome {
+        type enumeration {
+            enum "SUCCESS";
+            enum "FAILURE";
+        }
+    }
+
+
+        typedef EnterControllerDetailsOutcome {
+            type enumeration {
+                enum "SUCCESS";
+                enum "FAILURE";
+            }
+        }
+
+    typedef HostType {
+        type enumeration {
+            enum "NSP";
+            enum "DOMAIN";
+            enum "END-USER";
+        }
+    }
+    
+    typedef ApplicationType {
+        type enumeration {
+            enum "VIDEO";
+            enum "INDUSTRIAL";
+            enum "AUDIO";
+            enum "VOICE";
+            enum "DATA";
+        }
+    }
+
+    grouping applicationRequirements {
+        container applicationSpecifics {
+            leaf srcIpAddress {
+                type inet:ipv4-address;
+            }
+            leaf dstIpAddress {
+                type inet:ipv4-address;
+            }
+            leaf srcPort {
+            	type inet:port-number;
+            }
+            leaf dstPort {
+            	type inet:port-number;
+            }
+            leaf protocol {
+            	type Protocol;
+            }
+            leaf deadline {
+            	type string;
+            }
+        }
+        container qosParameters {
+        	uses path-segment-qos;
+        }
+    }
+
+    grouping protection-path-information {
+        leaf backup-path-segment-ID {
+            type int64;
+        }
+        leaf backup-border-switch-id {
+        	type string;
+        }
+    }
+
+    grouping path-segment-offer {
+
+        leaf ingress-border-switch-id {
+            type string;
+        }
+        leaf egress-border-switch-id {
+            type string;
+        }
+        container qos {
+            uses path-segment-qos;
+        }
+        leaf valid-until {
+            type string;
+        }
+        leaf price {
+            type int32;
+        }
+        leaf application-profile {
+        	type ApplicationType;
+        }
+        leaf-list traversed-countries-ISO-codes {
+        	type int32;
+        }
+        leaf-list service-functions {
+        	type string;
+        }
+    }
+
+    grouping path-segment-offer-list {
+        list path-segment-offer-element {
+            key "path-segment-ID";
+            leaf path-segment-ID {
+                description "An id generated by the nshmanager to internally reference
+                                each path segment (together with its qos offer) and to communicate
+                                with the qosorchestrator about which path segments are available
+                                and which will be instantiated.";
+                type int64;
+            }
+            container path-segment {
+                description
+                                "An offer of exactly one path segment.";
+                uses path-segment-offer;
+            }
+        }
+    }
+
+    grouping domain-information {
+        leaf as-number {
+            type int64;
+        }
+        leaf-list ipPrefixes {
+           	type inet:ipv4-prefix;
+        }
+        container border-switches {
+            uses border-switches-grouping;
+        }
+    }
+
+    grouping admin-configurations {
+                container domain-info {
+                    uses domain-information;
+                }
+                container policies {
+                    uses policy-model;
+                }
+                container path-segments-config {
+                    uses path-segments-model;
+                }
+    }
+}
